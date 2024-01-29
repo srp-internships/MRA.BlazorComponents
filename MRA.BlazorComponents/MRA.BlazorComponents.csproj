@@ -22,19 +22,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Remove="DynamicPages\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <EmbeddedResource Remove="DynamicPages\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Content Remove="DynamicPages\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Remove="DynamicPages\**" />
+      <Compile Include="DynamicPages\DependencyInitializer.cs" />
     </ItemGroup>
 
 </Project>

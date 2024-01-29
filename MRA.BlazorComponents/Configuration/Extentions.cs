@@ -15,4 +15,10 @@ public static class Extensions
     {
         return configuration["HttpClients:Identity"] + url;
     }
+    
+    public static string GetPagesUrl(
+        this IConfiguration configuration, string? url = null)
+    {
+        return configuration["HttpClients:Identity"] + url;
+    }
 }

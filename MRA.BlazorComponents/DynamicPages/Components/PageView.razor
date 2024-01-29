@@ -8,10 +8,10 @@
 </script>
 
 @code {
-    [Parameter] public string PageName { get; set; }
+    [Parameter] public required string PageName { get; set; }
 
-    [Inject] private PagesService PagesService { get; set; }
-    [Inject] public IJSRuntime JsRuntime { get; set; }
+    [Inject] private PagesService PagesService { get; set; } = null!;
+    [Inject] public IJSRuntime JsRuntime { get; set; } = null!;
 
     protected override async Task OnInitializedAsync()
     {

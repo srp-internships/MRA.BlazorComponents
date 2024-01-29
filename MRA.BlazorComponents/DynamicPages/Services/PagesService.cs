@@ -1,21 +1,23 @@
+using Microsoft.Extensions.Configuration;
+using MRA.BlazorComponents.Configuration;
 using MRA.BlazorComponents.HttpClient.Services;
 
 namespace MRA.BlazorComponents.DynamicPages.Services;
 
-public class PagesService(HttpClientService httpClient)
+public class PagesService(HttpClientService httpClient,IConfiguration configuration)
 {
     public async Task<string> GetHtmlContentAsync(string pageName)
     {
         var lang = Environmets.ApplicationCulture.Name;
         var pagesResponse =
-            await httpClient.GetAsJsonAsync<ContentResponse>($"pages/getContent?lang={lang}&pageName={pageName}");
+            await httpClient.GetAsJsonAsync<ContentResponse>(configuration.GetPagesUrl($"pages/getContent?lang={lang}&pageName={pageName}"));
         return pagesResponse.Success ? pagesResponse.Result.HtmlContent : "";
     }
 
     public async Task<List<PageResponse>> GetPagesAsync()
     {
         var lang = Environmets.ApplicationCulture.Name;
-        var pagesResponse = await httpClient.GetAsJsonAsync<List<PageResponse>>($"pages?lang={lang}");
+        var pagesResponse = await httpClient.GetAsJsonAsync<List<PageResponse>>(configuration.GetPagesUrl($"pages?lang={lang}"));
         return pagesResponse.Success ? pagesResponse.Result : [];
     }
 }
