@@ -1,0 +1,48 @@
+﻿@using MudBlazor
+
+@if (_isFunctionRunning)
+{
+    <MudButton Color="@Color" Variant="@Variant"
+               FullWidth="@FullWidth" Class="@Class" ButtonType="ButtonType">
+        <MudProgressCircular Indeterminate="true" Size="Size.Small"/>
+    </MudButton>
+}
+else
+{
+    <MudButton OnClick="StartFunction" Color="@Color" Variant="@Variant"
+               FullWidth="@FullWidth" Class="@Class" ButtonType="ButtonType">
+        @ChildContent
+    </MudButton>
+}
+
+@code {
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter] public EventCallback Function { get; set; }
+    [Parameter] public Color Color { get; set; }
+    [Parameter] public Variant Variant { get; set; }
+    [Parameter] public bool FullWidth { get; set; }
+    [Parameter] public string Class { get; set; } = "";
+    [Parameter] public ButtonType ButtonType { get; set; }
+
+    private bool _isFunctionRunning;
+
+    private async Task StartFunction()
+    {
+        try
+        {
+            _isFunctionRunning = true;
+            StateHasChanged();
+            await Function.InvokeAsync(null);
+        }
+        catch (Exception e)
+        {
+            // ignored
+        }
+        finally
+        {
+            _isFunctionRunning = false;
+            StateHasChanged();
+        }
+    }
+
+}
