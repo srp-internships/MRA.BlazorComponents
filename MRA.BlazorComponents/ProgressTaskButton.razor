@@ -10,7 +10,7 @@
 else
 {
     <MudButton OnClick="StartFunction" Color="@Color" Variant="@Variant" Style="@Style"
-               FullWidth="@FullWidth" Class="@Class" ButtonType="ButtonType">
+               StartIcon="@StartIcon" FullWidth="@FullWidth" Class="@Class" ButtonType="ButtonType">
         @ChildContent
     </MudButton>
 }
@@ -24,6 +24,7 @@ else
     [Parameter] public string Class { get; set; } = "";
     [Parameter] public ButtonType ButtonType { get; set; }
     [Parameter] public string Style { get; set; } = "";
+    [Parameter] public string? StartIcon { get; set; }
 
     private bool _isFunctionRunning;
 
