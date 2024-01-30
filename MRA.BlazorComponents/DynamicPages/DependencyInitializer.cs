@@ -6,5 +6,5 @@ namespace MRA.BlazorComponents.DynamicPages;
 public static class DependencyInitializer
 {
     public static IServiceCollection AddMraPages(this IServiceCollection services) =>
-        services.AddScoped<PagesService>();
+        services.AddScoped<IPagesService, PagesService>();
 }

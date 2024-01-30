@@ -8,10 +8,11 @@ using MRA.Identity.Application.Contract.User.Responses;
 
 namespace MRA.BlazorComponents.HttpClient.Services;
 #nullable disable
+
 public class HttpClientService(
     IHttpClientFactory httpClientFactory,
     IAltairCABlazorCookieUtil cookieUtil,
-    IHttpClientFactory clientFactory)
+    IHttpClientFactory clientFactory) : IHttpClientService
 {
     public async Task<ApiResponse<T>> GetAsJsonAsync<T>(string url, object content = null)
     {
@@ -123,6 +124,7 @@ public class HttpClientService(
             return ApiResponse.BuildFailed($"Server is not responding. {ex.Message}", ex.StatusCode);
         }
     }
+
     private async Task<System.Net.Http.HttpClient> CreateHttpClient()
     {
         var httpClient = httpClientFactory.CreateClient();
