@@ -19,6 +19,6 @@ public static class Extensions
     public static string GetPagesUrl(
         this IConfiguration configuration, string? url = null)
     {
-        return configuration["HttpClients:Identity"] + url;
+        return configuration["HttpClients:Pages"] + url;
     }
 }
