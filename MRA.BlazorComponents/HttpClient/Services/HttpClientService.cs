@@ -7,16 +7,15 @@ using MRA.BlazorComponents.HttpClient.Responses;
 using MRA.Identity.Application.Contract.User.Responses;
 
 namespace MRA.BlazorComponents.HttpClient.Services;
-#nullable disable
 
 public class HttpClientService(
     IHttpClientFactory httpClientFactory,
     IAltairCABlazorCookieUtil cookieUtil,
     IHttpClientFactory clientFactory) : IHttpClientService
 {
-    public async Task<ApiResponse<T>> GetAsJsonAsync<T>(string url, object content = null)
+    public async Task<ApiResponse<T>> GetAsJsonAsync<T>(string url, object? content = null)
     {
-        clientFactory.CreateClient("identity");
+        clientFactory.CreateClient();
         try
         {
             using var httpClient = await CreateHttpClient();
@@ -27,6 +26,21 @@ public class HttpClientService(
         catch (HttpRequestException ex)
         {
             return ApiResponse<T>.BuildFailed($"Server is not responding. {ex.Message}", ex.StatusCode);
+        }
+    }
+    
+    public async Task<ApiResponse> GetAsync(string url)
+    {
+        clientFactory.CreateClient();
+        try
+        {
+            using var httpClient = await CreateHttpClient();
+            var httpResponseMessage = await httpClient.GetAsync(url);
+            return ApiResponse.BuildSuccess(httpResponseMessage.StatusCode);
+        }
+        catch (HttpRequestException ex)
+        {
+            return ApiResponse.BuildFailed($"Server is not responding. {ex.Message}", ex.StatusCode);
         }
     }
 
@@ -57,6 +71,20 @@ public class HttpClientService(
         catch (HttpRequestException ex)
         {
             return ApiResponse<T>.BuildFailed($"Server is not responding. {ex.Message}", ex.StatusCode);
+        }
+    }
+
+    public async Task<ApiResponse> PostAsJsonAsync(string url, object content)
+    {
+        try
+        {
+            using var httpClient = await CreateHttpClient();
+            var response = await httpClient.PostAsJsonAsync(url, content);
+            return ApiResponse.BuildSuccess(response.StatusCode);
+        }
+        catch (HttpRequestException ex)
+        {
+            return ApiResponse.BuildFailed($"Server is not responding. {ex.Message}", ex.StatusCode);
         }
     }
 
