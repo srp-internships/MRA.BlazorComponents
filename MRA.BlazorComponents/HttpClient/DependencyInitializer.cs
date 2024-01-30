@@ -8,7 +8,7 @@ public static class DependencyInitializer
     public static IServiceCollection AddHttpClientService(this IServiceCollection services)
     {
         services.AddHttpClient();
-        services.AddScoped<HttpClientService>();
+        services.AddScoped<IHttpClientService, HttpClientService>();
         return services;
     }
 }

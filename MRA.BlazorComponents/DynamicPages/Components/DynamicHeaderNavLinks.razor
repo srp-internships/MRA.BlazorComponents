@@ -1,0 +1,22 @@
+@using MRA.BlazorComponents.DynamicPages.Services
+@using Microsoft.AspNetCore.Components.Routing
+@if (_dynamicPages != null)
+{
+    @foreach (var dynamicPage in _dynamicPages)
+    {
+        <MudNavLink Match="NavLinkMatch.All" Href="@("/pages/" + dynamicPage.Name)">@dynamicPage.Title</MudNavLink>
+    }
+}
+
+@code{
+
+    private List<PageResponse>? _dynamicPages;
+    [Inject] public IPagesService PagesService { get; set; } = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var pages = await PagesService.GetPagesAsync();
+        _dynamicPages = pages.Where(s => s.ShowInMenu).ToList();
+    }
+
+}

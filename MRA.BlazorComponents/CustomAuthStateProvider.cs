@@ -12,7 +12,7 @@ namespace MRA.BlazorComponents;
 public class CustomAuthStateProvider(
     IAltairCABlazorCookieUtil cookieUtil,
     IConfiguration configuration,
-    HttpClientService httpClient)
+    IHttpClientService httpClient)
     : AuthenticationStateProvider
 {
 
