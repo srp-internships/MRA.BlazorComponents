@@ -1,81 +1,51 @@
 ﻿using System.Net;
+using System.Net.Http.Json;
 
 namespace MRA.BlazorComponents.HttpClient.Responses;
-#nullable disable
+
 public record ApiResponse
 {
     public bool Success { get; set; }
-
-    public string Error { get; set; }
-
     public HttpStatusCode? HttpStatusCode { get; set; }
+    public BadRequestResponse? BadRequestResponse { get; protected set; }
 
-    public static ApiResponse BuildSuccess(HttpStatusCode? httpStatusCode = null)
+    public static async Task<ApiResponse> BuildFromHttpResponse(HttpResponseMessage responseMessage)
     {
-        return new ApiResponse
+        var apiResponse = new ApiResponse
         {
             Success = true,
-            HttpStatusCode = httpStatusCode
+            HttpStatusCode = responseMessage.StatusCode
         };
-    }
-
-    public static ApiResponse BuildFailed(string error, HttpStatusCode? httpStatusCode = null)
-    {
-        return new ApiResponse
+        if (responseMessage.StatusCode == System.Net.HttpStatusCode.BadRequest)
         {
-            Error = error,
-            HttpStatusCode = httpStatusCode,
-        };
-    }
+            apiResponse.BadRequestResponse = await responseMessage.Content.ReadFromJsonAsync<BadRequestResponse>();
+        }
 
-    public static ApiResponse BuildFailed(ErrorResponse error, HttpStatusCode? httpStatusCode = null)
-    {
-        return new ApiResponse
-        {
-            Error = string.Join(',', error.Errors.Select(s => s.Value)),
-            HttpStatusCode = httpStatusCode,
-        };
+        return apiResponse;
     }
 }
 
 public record ApiResponse<T> : ApiResponse
 {
-    public T Result { get; set; }
+    public T? Result { get; private set; }
 
-    public static ApiResponse<T> BuildSuccess(T response, HttpStatusCode? httpStatusCode = null)
+    public static async Task<ApiResponse<T>> BuildFromHttpResponseAsync(HttpResponseMessage responseMessage)
     {
-        return new ApiResponse<T>
+        var apiResponse = new ApiResponse<T>
         {
-            Success = true,
-            Result = response,
-            HttpStatusCode = httpStatusCode
+            HttpStatusCode = responseMessage.StatusCode,
+            Success = true
         };
-    }
+        switch (responseMessage.StatusCode)
+        {
+            case System.Net.HttpStatusCode.OK:
+                apiResponse.Result = await responseMessage.Content.ReadFromJsonAsync<T>();
+                break;
+            case System.Net.HttpStatusCode.BadRequest:
+                apiResponse.BadRequestResponse = await responseMessage.Content.ReadFromJsonAsync<BadRequestResponse>();
+                break;
+        }
 
-    public static new ApiResponse<T> BuildFailed(string error, HttpStatusCode? httpStatusCode = null)
-    {
-        return new ApiResponse<T>
-        {
-            Error = error,
-            HttpStatusCode = httpStatusCode,
-        };
-    }
-
-    public static ApiResponse<T> BuildFailed(T response, HttpStatusCode? httpStatusCode = null)
-    {
-        return new ApiResponse<T>
-        {
-            HttpStatusCode = httpStatusCode,
-            Result = response
-        };
-    }
-
-    public new static ApiResponse<T> BuildFailed(ErrorResponse error, HttpStatusCode? httpStatusCode = null)
-    {
-        return new ApiResponse<T>
-        {
-            Error = string.Join(',', error.Errors.Select(s => s.Value)),
-            HttpStatusCode = httpStatusCode,
-        };
+        return apiResponse;
     }
 }

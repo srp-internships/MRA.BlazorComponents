@@ -10,7 +10,7 @@ public class PagesService(IHttpClientService httpClient, IConfiguration configur
     {
         var lang = Environmets.ApplicationCulture.Name;
         var pagesResponse =
-            await httpClient.GetAsJsonAsync<ContentResponse>(
+            await httpClient.GetFromJsonAsync<ContentResponse>(
                 configuration.GetPagesUrl($"pages/getContent?lang={lang}&pageName={pageName}"));
         return pagesResponse.Success ? pagesResponse.Result.HtmlContent : "";
     }
@@ -19,7 +19,7 @@ public class PagesService(IHttpClientService httpClient, IConfiguration configur
     {
         var lang = Environmets.ApplicationCulture.Name;
         var pagesResponse =
-            await httpClient.GetAsJsonAsync<List<PageResponse>>(configuration.GetPagesUrl($"pages?lang={lang}"));
+            await httpClient.GetFromJsonAsync<List<PageResponse>>(configuration.GetPagesUrl($"pages?lang={lang}"));
         return pagesResponse.Success ? pagesResponse.Result : [];
     }
 }

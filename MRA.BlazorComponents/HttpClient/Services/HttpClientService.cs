@@ -1,4 +1,3 @@
-using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using AltairCA.Blazor.WebAssembly.Cookie;
@@ -7,26 +6,41 @@ using MRA.BlazorComponents.HttpClient.Responses;
 using MRA.Identity.Application.Contract.User.Responses;
 
 namespace MRA.BlazorComponents.HttpClient.Services;
-#nullable disable
 
 public class HttpClientService(
     IHttpClientFactory httpClientFactory,
-    IAltairCABlazorCookieUtil cookieUtil,
-    IHttpClientFactory clientFactory) : IHttpClientService
+    IAltairCABlazorCookieUtil cookieUtil) : IHttpClientService
 {
-    public async Task<ApiResponse<T>> GetAsJsonAsync<T>(string url, object content = null)
+    public async Task<ApiResponse<T>> GetFromJsonAsync<T>(string url, object? content = null)
     {
-        clientFactory.CreateClient("identity");
         try
         {
             using var httpClient = await CreateHttpClient();
-            return content == null
-                ? ApiResponse<T>.BuildSuccess(await httpClient.GetFromJsonAsync<T>(url))
-                : ApiResponse<T>.BuildSuccess(await httpClient.GetFromJsonAsync<T>(url, content));
+            if (content == null)
+            {
+                var response = await httpClient.GetAsync(url);
+                return await ApiResponse<T>.BuildFromHttpResponseAsync(response);
+            }
+
+            return await ApiResponse<T>.BuildFromHttpResponseAsync(await httpClient.GetAsync(url.AppendQuery(content)));
         }
-        catch (HttpRequestException ex)
+        catch (HttpRequestException)
         {
-            return ApiResponse<T>.BuildFailed($"Server is not responding. {ex.Message}", ex.StatusCode);
+            return new ApiResponse<T>();
+        }
+    }
+
+    public async Task<ApiResponse> GetAsync(string url)
+    {
+        try
+        {
+            using var httpClient = await CreateHttpClient();
+            var httpResponseMessage = await httpClient.GetAsync(url);
+            return await ApiResponse.BuildFromHttpResponse(httpResponseMessage);
+        }
+        catch (HttpRequestException)
+        {
+            return new ApiResponse();
         }
     }
 
@@ -36,62 +50,41 @@ public class HttpClientService(
         {
             using var httpClient = await CreateHttpClient();
             var response = await httpClient.DeleteAsync(url);
-            if (response.IsSuccessStatusCode)
-                return ApiResponse.BuildSuccess();
-            return ApiResponse.BuildFailed("Error on sending response. Please try again later", response.StatusCode);
+            return await ApiResponse.BuildFromHttpResponse(response);
         }
-        catch (HttpRequestException ex)
+        catch (HttpRequestException)
         {
-            return ApiResponse.BuildFailed($"Server is not responding. {ex.Message}", ex.StatusCode);
+            return new ApiResponse();
         }
     }
 
-    public async Task<ApiResponse<T>> PostAsJsonAsync<T>(string url, Object content)
+    public async Task<ApiResponse<T>> PostAsJsonAsync<T>(string url, object content)
     {
         try
         {
             using var httpClient = await CreateHttpClient();
             var response = await httpClient.PostAsJsonAsync(url, content);
-            return await GetApiResponseAsync<T>(response);
+            return await ApiResponse<T>.BuildFromHttpResponseAsync(response);
         }
-        catch (HttpRequestException ex)
+        catch (HttpRequestException)
         {
-            return ApiResponse<T>.BuildFailed($"Server is not responding. {ex.Message}", ex.StatusCode);
+            return new ApiResponse<T>();
         }
     }
 
-    private async Task<ApiResponse<T>> GetApiResponseAsync<T>(HttpResponseMessage response)
+    public async Task<ApiResponse> PostAsJsonAsync(string url, object content)
     {
-        if (response.IsSuccessStatusCode)
+        try
         {
-            if (typeof(T) == typeof(string))
-            {
-                string responseContent = await response.Content.ReadAsStringAsync();
-                return ApiResponse<T>.BuildSuccess((T)Convert.ChangeType(responseContent, typeof(T)),
-                    response.StatusCode);
-            }
-            else
-            {
-                var responseContent = await response.Content.ReadFromJsonAsync<T>();
-                return ApiResponse<T>.BuildSuccess(responseContent, response.StatusCode);
-            }
+            using var httpClient = await CreateHttpClient();
+            var response = await httpClient.PostAsJsonAsync(url, content);
+            return await ApiResponse.BuildFromHttpResponse(response);
         }
-
-        if (response.StatusCode == HttpStatusCode.BadRequest)
+        catch (HttpRequestException)
         {
-            ErrorResponse responseContent = await response.Content.ReadFromJsonAsync<ErrorResponse>();
-            return ApiResponse<T>.BuildFailed(responseContent, response.StatusCode);
+            return new ApiResponse();
         }
-
-        if (response.StatusCode == HttpStatusCode.Conflict)
-        {
-            var responseContent = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
-            return ApiResponse<T>.BuildFailed(responseContent.Detail, response.StatusCode);
-        }
-
-        return ApiResponse<T>.BuildFailed("Error on sending response. Please try again later", response.StatusCode);
     }
-
 
     public async Task<ApiResponse<T>> PutAsJsonAsync<T>(string url, object content)
     {
@@ -99,15 +92,15 @@ public class HttpClientService(
         {
             using var httpClient = await CreateHttpClient();
             var response = await httpClient.PutAsJsonAsync(url, content);
-            return await GetApiResponseAsync<T>(response);
+            return await ApiResponse<T>.BuildFromHttpResponseAsync(response);
         }
-        catch (HttpRequestException ex)
+        catch (HttpRequestException)
         {
-            return ApiResponse<T>.BuildFailed($"Server is not responding. {ex.Message}", ex.StatusCode);
+            return new ApiResponse<T>();
         }
     }
 
-    public async Task<ApiResponse> PutAsync(string url, object content)
+    public async Task<ApiResponse> PutAsJsonAsync(string url, object content)
     {
         try
         {
@@ -119,9 +112,9 @@ public class HttpClientService(
                 HttpStatusCode = response.StatusCode
             };
         }
-        catch (HttpRequestException ex)
+        catch (HttpRequestException)
         {
-            return ApiResponse.BuildFailed($"Server is not responding. {ex.Message}", ex.StatusCode);
+            return new ApiResponse();
         }
     }
 
@@ -129,9 +122,9 @@ public class HttpClientService(
     {
         var httpClient = httpClientFactory.CreateClient();
         var authToken = await cookieUtil.GetValueAsync<JwtTokenResponse>("authToken");
-        if (authToken != null)
+        if (authToken != null!)
             httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", authToken.AccessToken.Replace("\"", ""));
+                new AuthenticationHeaderValue("Bearer", authToken.AccessToken);
         return httpClient;
     }
 }
