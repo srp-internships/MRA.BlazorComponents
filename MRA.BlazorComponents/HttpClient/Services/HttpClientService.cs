@@ -9,12 +9,10 @@ namespace MRA.BlazorComponents.HttpClient.Services;
 
 public class HttpClientService(
     IHttpClientFactory httpClientFactory,
-    IAltairCABlazorCookieUtil cookieUtil,
-    IHttpClientFactory clientFactory) : IHttpClientService
+    IAltairCABlazorCookieUtil cookieUtil) : IHttpClientService
 {
     public async Task<ApiResponse<T>> GetFromJsonAsync<T>(string url, object? content = null)
     {
-        clientFactory.CreateClient();
         try
         {
             using var httpClient = await CreateHttpClient();
@@ -34,7 +32,6 @@ public class HttpClientService(
 
     public async Task<ApiResponse> GetAsync(string url)
     {
-        clientFactory.CreateClient();
         try
         {
             using var httpClient = await CreateHttpClient();
@@ -125,9 +122,9 @@ public class HttpClientService(
     {
         var httpClient = httpClientFactory.CreateClient();
         var authToken = await cookieUtil.GetValueAsync<JwtTokenResponse>("authToken");
-        if (authToken != null)
+        if (authToken != null!)
             httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", authToken.AccessToken.Replace("\"", ""));
+                new AuthenticationHeaderValue("Bearer", authToken.AccessToken);
         return httpClient;
     }
 }
