@@ -36,7 +36,7 @@ public class CustomAuthStateProvider(
     private async Task<JwtTokenResponse?> GetTokenAsync()
     {
         var token = await cookieUtil.GetValueAsync<JwtTokenResponse>("authToken");
-        if (token == null)
+        if (token == null!)
         {
             return null;
         }
@@ -54,7 +54,7 @@ public class CustomAuthStateProvider(
                 return null;
             }
 
-            await cookieUtil.SetValueAsync("authToken", refreshResponse.Result, secure: true);
+            await cookieUtil.SetValueAsync("authToken", refreshResponse.Result!, secure: true);
         }
 
         return token;

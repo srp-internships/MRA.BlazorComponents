@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace MRA.BlazorComponents.HttpClient.Responses;
 
-public class CustomProblemDetails
+public class BadRequestResponse
 {
     [JsonPropertyName("status")] public int? Status { get; set; }
 
