@@ -11,15 +11,15 @@ public class PagesService(IHttpClientService httpClient, IConfiguration configur
         var lang = Environmets.ApplicationCulture.Name;
         var pagesResponse =
             await httpClient.GetFromJsonAsync<ContentResponse>(
-                configuration.GetPagesUrl($"pages/getContent?lang={lang}&pageName={pageName}"));
+                configuration.GetPagesUrl($"api/pages/getContent?lang={lang}&pageName={pageName}"));
         return pagesResponse.Success ? pagesResponse.Result.HtmlContent : "";
     }
 
     public async Task<List<PageResponse>> GetPagesAsync()
     {
         var lang = Environmets.ApplicationCulture.Name;
-        var pagesResponse =
-            await httpClient.GetFromJsonAsync<List<PageResponse>>(configuration.GetPagesUrl($"pages?lang={lang}"));
+        var pagesResponse = 
+            await httpClient.GetFromJsonAsync<List<PageResponse>>(configuration.GetPagesUrl($"api/pages?lang={lang}"));
         return pagesResponse.Success ? pagesResponse.Result : [];
     }
 }
