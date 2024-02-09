@@ -27,6 +27,12 @@ public static class SnackbarExtensions
             return;
         }
 
+        if (apiResponse.HttpStatusCode is HttpStatusCode.Conflict or HttpStatusCode.Unauthorized)
+        {
+            snackbar.Add(apiResponse.BadRequestResponse?.Detail);
+            return;
+        }
+
         if (successMessage != null && apiResponse.HttpStatusCode == HttpStatusCode.OK)
         {
             snackbar.Add(successMessage, Severity.Success);
