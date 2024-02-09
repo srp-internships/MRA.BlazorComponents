@@ -15,10 +15,11 @@
 
     private List<PageResponse>? _dynamicPages;
     [Inject] public IPagesService PagesService { get; set; } = null!;
+    [Parameter] public required string Application { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        var pages = await PagesService.GetPagesAsync();
+        var pages = await PagesService.GetPagesAsync(Application);
         _dynamicPages = pages.Where(s => s.ShowInMenu).ToList();
     }
 
