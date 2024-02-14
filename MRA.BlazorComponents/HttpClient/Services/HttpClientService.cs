@@ -1,6 +1,6 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using AltairCA.Blazor.WebAssembly.Cookie;
+using Blazored.LocalStorage;
 using MRA.BlazorComponents.HttpClient.Extensions;
 using MRA.BlazorComponents.HttpClient.Responses;
 using MRA.Identity.Application.Contract.User.Responses;
@@ -9,7 +9,7 @@ namespace MRA.BlazorComponents.HttpClient.Services;
 
 public class HttpClientService(
     IHttpClientFactory httpClientFactory,
-    IAltairCABlazorCookieUtil cookieUtil) : IHttpClientService
+    ILocalStorageService localStorageService) : IHttpClientService
 {
     public async Task<ApiResponse<T>> GetFromJsonAsync<T>(string url, object? content = null)
     {
@@ -121,7 +121,7 @@ public class HttpClientService(
     private async Task<System.Net.Http.HttpClient> CreateHttpClient()
     {
         var httpClient = httpClientFactory.CreateClient();
-        var authToken = await cookieUtil.GetValueAsync<JwtTokenResponse>("authToken");
+        var authToken = await localStorageService.GetItemAsync<JwtTokenResponse>("authToken");
         if (authToken != null!)
             httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", authToken.AccessToken);
