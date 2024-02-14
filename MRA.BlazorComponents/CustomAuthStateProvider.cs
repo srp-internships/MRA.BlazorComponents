@@ -1,18 +1,17 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using AltairCA.Blazor.WebAssembly.Cookie;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Configuration;
 using MRA.BlazorComponents.HttpClient.Services;
 using MRA.Identity.Application.Contract.User.Queries;
 using MRA.Identity.Application.Contract.User.Responses;
-
+using Blazored.LocalStorage;
 namespace MRA.BlazorComponents;
 
 public class CustomAuthStateProvider(
-    IAltairCABlazorCookieUtil cookieUtil,
-    IConfiguration configuration,
-    IHttpClientService httpClient)
+   IConfiguration configuration,
+    IHttpClientService httpClient,
+    ILocalStorageService localStorageService)
     : AuthenticationStateProvider
 {
 
@@ -35,7 +34,7 @@ public class CustomAuthStateProvider(
 
     private async Task<JwtTokenResponse?> GetTokenAsync()
     {
-        var token = await cookieUtil.GetValueAsync<JwtTokenResponse>("authToken");
+        var token = await localStorageService.GetItemAsync<JwtTokenResponse>("authToken");
         if (token == null!)
         {
             return null;
@@ -54,7 +53,7 @@ public class CustomAuthStateProvider(
                 return null;
             }
 
-            await cookieUtil.SetValueAsync("authToken", refreshResponse.Result!, secure: true);
+            await localStorageService.SetItemAsync("authToken", refreshResponse.Result!);
         }
 
         return token;
