@@ -1,11 +1,10 @@
 ﻿@using Blazored.FluentValidation
-@using MRA.BlazorComponents.DynamicPages.Services.Message
 @using MRA.Identity.Application.Contract.Messages.Commands
-@using MRA.Identity.Application.Contract.Messages.Queries
 @using MRA.Identity.Application.Contract.Messages.Responses
 @using Microsoft.AspNetCore.Components.Forms
+@using MRA.BlazorComponents.Dialogs.Services.Message
 @inject ISnackbar Snackbar
-@inject IMessageService messageService
+@inject IMessageService MessageService
 <MudDialog>
     <DialogContent>
         <MudButton Variant="Variant.Outlined" OnClick="() => showHistory = !showHistory">@(showHistory ? "Hide history" : "Show history")</MudButton>
@@ -72,7 +71,7 @@
         {
             message.Phone = DefaultPhoneNumber;
         }
-        messages = await messageService.GetAllMessagesAsync();
+        messages = await MessageService.GetAllMessagesAsync();
         if (messages is not null)
         {
             fetching = false;
@@ -84,7 +83,7 @@
     {
         if (await _fluentValidationValidator!.ValidateAsync())
         {
-            var response = await messageService.SendMessageAsync(message);
+            var response = await MessageService.SendMessageAsync(message);
             if (response.Success)
             {
                 Snackbar.Add("Message sent successfully", Severity.Info);
