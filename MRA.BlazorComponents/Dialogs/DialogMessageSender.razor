@@ -18,9 +18,11 @@
                 <MudTextField T="string" Lines="5" Variant="Variant.Outlined" @bind-Value="message.Comment" Label="Comment" />
 
                 <br />
-                <MudButton OnClick="Cancel">Cancel</MudButton>
-                <MudButton Color="Color.Info" Variant="Variant.Filled" OnClick="Submit">"Send"</MudButton>
-                </EditForm>
+                <div style="display: flex; justify-content: flex-end;">
+                    <MudButton OnClick="Cancel">Cancel</MudButton>
+                    <MudButton Color="Color.Info" Variant="Variant.Filled" OnClick="Submit">@ContentService["Message:Send"]</MudButton>
+                </div>
+            </EditForm>
         } else
         {
             if (fetching)
