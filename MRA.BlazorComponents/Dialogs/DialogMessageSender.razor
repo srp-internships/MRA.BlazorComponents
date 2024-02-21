@@ -11,19 +11,23 @@
         @if (!showHistory)
         {
             <EditForm Model="@message">
-                <FluentValidationValidator @ref="_fluentValidationValidator" />
+                <FluentValidationValidator @ref="_fluentValidationValidator"/>
 
-                <MudTextField @bind-Value="message.Phone" Label="Phone" For="@(()=>message.Phone)" />
-                <MudTextField T="string" Lines="5" Variant="Variant.Outlined" @bind-Value="message.Text" Label="Message" For="@(()=>message.Text)" />
-                <MudTextField T="string" Lines="5" Variant="Variant.Outlined" @bind-Value="message.Comment" Label="Comment" />
+                <MudTextField @bind-Value="message.Phone" Label="Phone" For="@(() => message.Phone)"/>
+                <MudTextField T="string" Lines="5" Variant="Variant.Outlined" @bind-Value="message.Text" Label="Message" For="@(() => message.Text)"/>
+                <MudTextField T="string" Lines="5" Variant="Variant.Outlined" @bind-Value="message.Comment" Label="Comment"/>
 
-                <br />
+                <br/>
                 <div style="display: flex; justify-content: flex-end;">
                     <MudButton OnClick="Cancel">Cancel</MudButton>
-                    <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Submit">@ContentService["Message:Send"]</MudButton>
+                    <ProgressTaskButton Color="Color.Primary" Variant="Variant.Filled" Function="Submit">
+                        <MudText Typo="Typo.button">Send</MudText>
+                    </ProgressTaskButton>
+
                 </div>
             </EditForm>
-        } else
+        }
+        else
         {
             if (fetching)
             {
@@ -42,21 +46,22 @@
                     </HeaderContent>
                     <RowTemplate>
                         <MudTd DataLabel="Nr">@context.SenderUserName</MudTd>
-                            <MudTd DataLabel="Sign">@context.Phone</MudTd>
-                            <MudTd DataLabel="Name">@context.Text</MudTd>
-                            <MudTd DataLabel="Name">@context.Date</MudTd>
-                            <MudTd DataLabel="Position">@context.Comment</MudTd>
-                            <MudTd DataLabel="Molar mass">@context.Status</MudTd>
-                        </RowTemplate>
-                       <PagerContent>
-                            <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }" InfoFormat="@($"Left {infoFormat}")" HorizontalAlignment="HorizontalAlignment.Left" />
-                       </PagerContent>
-                    </MudTable>
+                        <MudTd DataLabel="Sign">@context.Phone</MudTd>
+                        <MudTd DataLabel="Name">@context.Text</MudTd>
+                        <MudTd DataLabel="Name">@context.Date</MudTd>
+                        <MudTd DataLabel="Position">@context.Comment</MudTd>
+                        <MudTd DataLabel="Molar mass">@context.Status</MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }" InfoFormat="@($"Left {infoFormat}")" HorizontalAlignment="HorizontalAlignment.Left"/>
+                    </PagerContent>
+                </MudTable>
             }
         }
     </DialogContent>
 
 </MudDialog>
+
 @code {
     private FluentValidationValidator _fluentValidationValidator;
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
@@ -73,6 +78,7 @@
         {
             message.Phone = DefaultPhoneNumber;
         }
+
         messages = await MessageService.GetAllMessagesAsync();
         if (messages is not null)
         {
@@ -89,13 +95,15 @@
             if (response.Success)
             {
                 Snackbar.Add("Message sent successfully", Severity.Info);
-            } else
+            }
+            else
             {
                 Snackbar.Add("Unable to send message, something went wront", Severity.Info);
             }
+
             MudDialog.Close();
         }
-
     }
+
     void Cancel() => MudDialog.Cancel();
 }
