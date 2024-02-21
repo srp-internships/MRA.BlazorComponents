@@ -2,7 +2,7 @@
 using MRA.Identity.Application.Contract.Messages.Commands;
 using MRA.Identity.Application.Contract.Messages.Responses;
 
-namespace MRA.BlazorComponents.DynamicPages.Services.Message
+namespace MRA.BlazorComponents.Dialogs.Services.Message
 {
     public interface IMessageService
     {

@@ -23,4 +23,12 @@
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.2.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <UpToDateCheckInput Remove="DynamicPages\Components\Dialogs\DialogMessageSender.razor" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Dialogs\Services\" />
+    </ItemGroup>
+
 </Project>
