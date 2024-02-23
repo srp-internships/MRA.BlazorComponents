@@ -1,0 +1,21 @@
+@inject IDialogService DialogService
+<MudButton OnClick="@(() => Click())" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Email">
+    Send email
+</MudButton>
+
+@code {
+    [Parameter] public required string Email { get; set; }
+    private readonly DialogOptions _dialogOptions = new()
+    {
+        Position = DialogPosition.Center,
+        DisableBackdropClick = false,
+        CloseOnEscapeKey = true,
+        CloseButton = true,
+        FullScreen = true,
+    };
+
+    private async Task Click()
+    {
+        await DialogService.ShowAsync<SendEmailDialog>("",_dialogOptions);
+    }
+}
