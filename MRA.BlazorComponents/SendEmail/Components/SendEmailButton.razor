@@ -1,6 +1,6 @@
 @inject IDialogService DialogService
 <MudButton OnClick="@(() => ExecuteAsync())" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Email">
-    Send email
+    @Title
 </MudButton>
 
 @code {
@@ -9,6 +9,7 @@
 
     public delegate Task PastActionDelegate();
 
+    [Parameter] public string Title { get; set; } = "Send email";
     [Parameter] public PreActionDelegate? PreAction { get; set; }
 
     [Parameter] public PastActionDelegate? PastAction { get; set; }
