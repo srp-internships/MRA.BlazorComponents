@@ -1,0 +1,20 @@
+﻿@inject IDialogService DialogService
+<MudButton Variant="Variant.Filled" OnClick="@(() => OpenDialog())">
+	<MudIcon Icon="@Icons.Material.Filled.Message" />
+</MudButton>
+
+@code {
+	[Parameter] public required string defaultPhoneNumber { get; set; }
+	private readonly DialogOptions options = new()
+	{
+		CloseButton = true,
+		MaxWidth = MaxWidth.ExtraExtraLarge,
+		FullWidth = true
+	};
+	public void OpenDialog()
+	{
+		var parameters = new DialogParameters();
+		parameters.Add("DefaultPhoneNumber", defaultPhoneNumber);
+		DialogService.Show<DialogMessageSender>("Send message", parameters, options);
+	}
+}
