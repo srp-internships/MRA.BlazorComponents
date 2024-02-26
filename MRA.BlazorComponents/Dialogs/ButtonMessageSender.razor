@@ -4,17 +4,17 @@
 </MudButton>
 
 @code {
-	[Parameter] public required string defaultPhoneNumber { get; set; }
-	private readonly DialogOptions options = new()
+	[Parameter] public required string DefaultPhoneNumber { get; set; }
+	private readonly DialogOptions _options = new()
 	{
 		CloseButton = true,
 		MaxWidth = MaxWidth.ExtraExtraLarge,
 		FullWidth = true
 	};
-	public void OpenDialog()
+
+	private void OpenDialog()
 	{
-		var parameters = new DialogParameters();
-		parameters.Add("DefaultPhoneNumber", defaultPhoneNumber);
-		DialogService.Show<DialogMessageSender>("Send message", parameters, options);
+		var parameters = new DialogParameters { { "DefaultPhoneNumber", DefaultPhoneNumber } };
+		DialogService.Show<DialogMessageSender>("Send message", parameters, _options);
 	}
 }
