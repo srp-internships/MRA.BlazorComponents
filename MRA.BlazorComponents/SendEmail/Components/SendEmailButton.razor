@@ -1,21 +1,39 @@
 @inject IDialogService DialogService
-<MudButton OnClick="@(() => Click())" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Email">
+<MudButton OnClick="@(() => ExecuteAsync())" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Email">
     Send email
 </MudButton>
 
 @code {
+
+    public delegate Task<bool> PreActionDelegate();
+
+    public delegate Task PastActionDelegate();
+
+    [Parameter] public PreActionDelegate? PreAction { get; set; }
+
+    [Parameter] public PastActionDelegate? PastAction { get; set; }
+
     [Parameter] public required string Email { get; set; }
+
     private readonly DialogOptions _dialogOptions = new()
     {
         Position = DialogPosition.Center,
         DisableBackdropClick = false,
         CloseOnEscapeKey = true,
         CloseButton = true,
-        FullScreen = true,
+        FullScreen = true
     };
 
-    private async Task Click()
+    public async Task ExecuteAsync()
     {
-        await DialogService.ShowAsync<SendEmailDialog>("",_dialogOptions);
+        var preSuccess = true;
+        if (PreAction != null) preSuccess = await PreAction();
+        if (preSuccess)
+        {
+            var parameters = new DialogParameters { { nameof(SendEmailDialog.Email), Email } };
+            await DialogService.ShowAsync<SendEmailDialog>("", parameters, _dialogOptions);
+            if (PastAction != null) await PastAction();
+        }
     }
+
 }
