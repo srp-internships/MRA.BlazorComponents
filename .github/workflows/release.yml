@@ -17,13 +17,13 @@ jobs:
         id: taggerDryRun
         uses: anothrNick/github-tag-action@1.64.0
         env:
-          WITH_V: true
-          DRY_RUN: true
+          WITH_V: false
+          INITIAL_VERSION: 1.1.1
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          
+
       - name: Set version in csproj
         run: |
-          version=$(echo "${{ steps.taggerDryRun.outputs.new_tag }}" | cut -c 2-) # Remove 'v' prefix from tag
+          version="${{ steps.taggerDryRun.outputs.new_tag }}"
           sed -i "s/<Version>.*<\/Version>/<Version>$version<\/Version>/" ./MRA.BlazorComponents/MRA.BlazorComponents.csproj
 
       - name: Setup .NET Core
