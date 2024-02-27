@@ -17,7 +17,7 @@ jobs:
         id: taggerDryRun
         uses: anothrNick/github-tag-action@1.64.0
         env:
-          WITH_V: true
+          WITH_V: false
           DRY_RUN: true
 
       - name: Set version in csproj
