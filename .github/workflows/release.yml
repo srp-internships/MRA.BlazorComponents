@@ -17,9 +17,8 @@ jobs:
         id: taggerDryRun
         uses: anothrNick/github-tag-action@1.64.0
         env:
-          WITH_V: false
+          WITH_V: true
           DRY_RUN: true
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: Set version in csproj
         run: |
@@ -42,3 +41,11 @@ jobs:
 
       - name: Publish to NuGet
         run: dotnet nuget push ./artifacts/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+
+
+      - name: Minor version for each merge
+        id: taggerFinal
+        uses: anothrNick/github-tag-action@1.64.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          WITH_V: true
