@@ -19,6 +19,7 @@ jobs:
         env:
           WITH_V: false
           INITIAL_VERSION: 1.1.1
+          DRY_RUN: true
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: Set version in csproj
