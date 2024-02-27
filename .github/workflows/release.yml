@@ -23,7 +23,7 @@ jobs:
           
       - name: Set version in csproj
         run: |
-          version=$(echo "${{ steps.taggerDryRun.outputs.tags }}" | cut -c 2-) # Remove 'v' prefix from tag
+          version=$(echo "${{ steps.taggerDryRun.outputs.new_tag }}" | cut -c 2-) # Remove 'v' prefix from tag
           sed -i "s/<Version>.*<\/Version>/<Version>$version<\/Version>/" ./MRA.BlazorComponents/MRA.BlazorComponents.csproj
 
       - name: Setup .NET Core
@@ -42,10 +42,3 @@ jobs:
 
       - name: Publish to NuGet
         run: dotnet nuget push ./artifacts/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
-        
-      - name: Minor version for each merge
-        id: taggerFinal
-        uses: anothrNick/github-tag-action@1.64.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          WITH_V: true
