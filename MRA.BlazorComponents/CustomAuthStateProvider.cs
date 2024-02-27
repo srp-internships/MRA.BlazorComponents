@@ -6,15 +6,15 @@ using MRA.BlazorComponents.HttpClient.Services;
 using MRA.Identity.Application.Contract.User.Queries;
 using MRA.Identity.Application.Contract.User.Responses;
 using Blazored.LocalStorage;
+
 namespace MRA.BlazorComponents;
 
 public class CustomAuthStateProvider(
-   IConfiguration configuration,
+    IConfiguration configuration,
     IHttpClientService httpClient,
     ILocalStorageService localStorageService)
     : AuthenticationStateProvider
 {
-
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
         var authToken = await GetTokenAsync();
