@@ -140,7 +140,7 @@
         var html = await _quillHtml.GetHTML();
         _model.Text = html;
         var postResult =
-            await HttpClientService.PostAsJsonAsync(Configuration.GetIdentityUrl("emailTemplates"), _model);
+            await HttpClientService.PostAsJsonAsync(Configuration.GetIdentityUrl("user/sendEmail"), _model);
         Snackbar.ShowIfError(postResult, "Server is not responding, please try again later",
             "Email was successfully sent");
     }
