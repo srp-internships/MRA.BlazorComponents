@@ -20,7 +20,7 @@ jobs:
       - name: Set version in csproj
         run: |
           version=$(echo "${{ steps.tag.outputs.tags }}" | cut -c 2-) # Remove 'v' prefix from tag
-          sed -i "s/<Version>.*<\/Version>/<Version>$version<\/Version>/" your_csproj_file.csproj
+          sed -i "s/<Version>.*<\/Version>/<Version>$version<\/Version>/" ./MRA.BlazorComponents/MRA.BlazorComponents.csproj
 
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
