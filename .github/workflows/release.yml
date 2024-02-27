@@ -13,6 +13,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: update version in csproj file
+        id: tag
+        uses: anothrNick/github-tag-action@1.64.0
+
+      - name: Set version in csproj
+        run: |
+          version=$(echo "${{ steps.tag.outputs.tags }}" | cut -c 2-) # Remove 'v' prefix from tag
+          sed -i "s/<Version>.*<\/Version>/<Version>$version<\/Version>/" your_csproj_file.csproj
+
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
@@ -22,7 +31,7 @@ jobs:
         run: dotnet restore
 
       - name: Build project
-        run: dotnet build --configuration Release
+        run: dotnet build --no-restore --configuration Release
 
       - name: Pack NuGet package
         run: dotnet pack --configuration Release --output ./artifacts
