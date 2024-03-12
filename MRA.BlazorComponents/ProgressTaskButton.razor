@@ -1,28 +1,23 @@
-﻿@if (_isFunctionRunning)
+﻿@inherits MudBaseButton
+@if (_isFunctionRunning)
 {
-    <MudButton Color="@Color" Variant="@Variant"
-               FullWidth="@FullWidth" Class="@Class" ButtonType="ButtonType">
+    <MudButton @attributes="AdditionalAttributes">
         <MudProgressCircular Indeterminate="true" Size="Size.Small"/>
     </MudButton>
 }
 else
 {
-    <MudButton OnClick="StartFunction" Color="@Color" Variant="@Variant" Style="@Style"
-               StartIcon="@StartIcon" FullWidth="@FullWidth" Class="@Class" ButtonType="ButtonType">
+    <MudButton OnClick="StartFunction" @attributes="AdditionalAttributes">
         @ChildContent
     </MudButton>
 }
 
 @code {
-    [Parameter] public RenderFragment ChildContent { get; set; }
-    [Parameter] public EventCallback Function { get; set; }
-    [Parameter] public Color Color { get; set; }
-    [Parameter] public Variant Variant { get; set; }
-    [Parameter] public bool FullWidth { get; set; }
-    [Parameter] public string Class { get; set; } = "";
-    [Parameter] public ButtonType ButtonType { get; set; }
-    [Parameter] public string Style { get; set; } = "";
-    [Parameter] public string? StartIcon { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public new EventCallback OnClick { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IDictionary<string, object>? AdditionalAttributes { get; set; }
 
     private bool _isFunctionRunning;
 
@@ -32,7 +27,7 @@ else
         {
             _isFunctionRunning = true;
             StateHasChanged();
-            await Function.InvokeAsync(null);
+            await OnClick.InvokeAsync(null);
         }
         catch (Exception)
         {
