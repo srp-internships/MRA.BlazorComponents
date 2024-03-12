@@ -1,22 +1,29 @@
 ﻿@inherits MudButton
+
 @if (_isFunctionRunning)
 {
-    <MudButton @attributes="AdditionalAttributes">
+    <MudButton StartIcon="@StartIcon" EndIcon="@EndIcon" IconColor="@IconColor" IconSize="@IconSize"
+               IconClass="@IconClass" Color="@Color" Size="@Size" Variant="@Variant" FullWidth="@FullWidth"
+               UserAttributes="@UserAttributes" Style="@Style" Disabled="@Disabled" ButtonType="@ButtonType"
+               Class="@Class" DisableElevation="@DisableElevation" DisableRipple="@DisableRipple" Tag="@Tag"
+               ClickPropagation="@ClickPropagation" HtmlTag="@HtmlTag" Target="@Target" Rel="@Rel">
         <MudProgressCircular Indeterminate="true" Size="Size.Small"/>
     </MudButton>
 }
 else
 {
-    <MudButton OnClick="StartFunction" @attributes="AdditionalAttributes">
+    <MudButton StartIcon="@StartIcon" EndIcon="@EndIcon" IconColor="@IconColor" IconSize="@IconSize"
+               IconClass="@IconClass" Color="@Color" Size="@Size" Variant="@Variant" FullWidth="@FullWidth"
+               UserAttributes="@UserAttributes" Style="@Style" Disabled="@Disabled" ButtonType="@ButtonType"
+               Class="@Class" DisableElevation="@DisableElevation" DisableRipple="@DisableRipple" Tag="@Tag"
+               ClickPropagation="@ClickPropagation" HtmlTag="@HtmlTag" Target="@Target" Rel="@Rel"
+               OnClick="@StartFunction">
         @ChildContent
     </MudButton>
 }
 
 @code {
-    [Parameter] public new EventCallback OnClick { get; set; }
 
-    [Parameter(CaptureUnmatchedValues = true)]
-    public IDictionary<string, object>? AdditionalAttributes { get; set; }
 
     private bool _isFunctionRunning;
 
