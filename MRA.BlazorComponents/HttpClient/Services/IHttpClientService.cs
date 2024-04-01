@@ -11,4 +11,7 @@ public interface IHttpClientService
     Task<ApiResponse> PostAsJsonAsync(string url, object content);
     Task<ApiResponse<T>> PutAsJsonAsync<T>(string url, object content);
     Task<ApiResponse> PutAsJsonAsync(string url, object content);
+    
+    Task<ApiResponse<T>> PatchAsJsonAsync<T>(string url, object content);
+    Task<ApiResponse> PatchAsJsonAsync(string url, object content);
 }
