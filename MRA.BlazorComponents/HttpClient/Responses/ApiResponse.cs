@@ -36,15 +36,11 @@ public record ApiResponse<T> : ApiResponse
             HttpStatusCode = responseMessage.StatusCode,
             Success = true
         };
-        switch (responseMessage.StatusCode)
-        {
-            case System.Net.HttpStatusCode.OK:
-                apiResponse.Result = await responseMessage.Content.ReadFromJsonAsync<T>();
-                break;
-            case System.Net.HttpStatusCode.BadRequest:
-                apiResponse.BadRequestResponse = await responseMessage.Content.ReadFromJsonAsync<BadRequestResponse>();
-                break;
-        }
+
+        if (responseMessage.IsSuccessStatusCode)
+            apiResponse.Result = await responseMessage.Content.ReadFromJsonAsync<T>();
+        else
+            apiResponse.BadRequestResponse = await responseMessage.Content.ReadFromJsonAsync<BadRequestResponse>();
 
         return apiResponse;
     }

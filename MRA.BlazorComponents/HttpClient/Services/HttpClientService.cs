@@ -118,6 +118,38 @@ public class HttpClientService(
         }
     }
 
+    public async Task<ApiResponse<T>> PatchAsJsonAsync<T>(string url, object content)
+    {
+        try
+        {
+            using var httpClient = await CreateHttpClient();
+            var response = await httpClient.PatchAsJsonAsync(url, content);
+            return await ApiResponse<T>.BuildFromHttpResponseAsync(response);
+        }
+        catch (HttpRequestException)
+        {
+            return new ApiResponse<T>();
+        }
+    }
+
+    public async Task<ApiResponse> PatchAsJsonAsync(string url, object content)
+    {
+        try
+        {
+            using var httpClient = await CreateHttpClient();
+            var response = await httpClient.PatchAsJsonAsync(url, content);
+            return new ApiResponse
+            {
+                Success = response.IsSuccessStatusCode,
+                HttpStatusCode = response.StatusCode
+            };
+        }
+        catch (HttpRequestException)
+        {
+            return new ApiResponse();
+        }
+    }
+
     private async Task<System.Net.Http.HttpClient> CreateHttpClient()
     {
         var httpClient = httpClientFactory.CreateClient();
